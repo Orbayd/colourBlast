@@ -66,7 +66,7 @@ public partial class GameManager : MonoBehaviour
         {
             Camera.main.orthographicSize *= gridHorizontalExtend / horizontalExtend;
         }
-         if(gridVerticalExtend > verticalExtend)
+        if(gridVerticalExtend > verticalExtend)
         {
             Camera.main.orthographicSize *= gridVerticalExtend / verticalExtend;
         }
@@ -76,10 +76,7 @@ public partial class GameManager : MonoBehaviour
 
         Camera.main.transform.position = new Vector3(gridHorizontalExtend / 2f - _grid.CellSize / 2f,
                                                       - verticalExtend +_grid.CellSize / 2f , -10);
-        
-        
-        // Camera.main.transform.position = new Vector3((float)_grid.RowLenght * _grid.CellSize / 2f - _grid.CellSize / 2f ,
-        //                                            -(float)_grid.ColumnLenght / _grid.CellSize * 2f, -10);
+    
     }
 
     private IEnumerator ShuffleRoutine()

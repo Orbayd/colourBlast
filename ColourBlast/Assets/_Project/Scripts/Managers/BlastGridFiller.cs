@@ -21,8 +21,9 @@ public class BlastGridFiller
                 var rowIds = column.Value.OrderByDescending(x => x);
                 foreach (var row in rowIds)
                 {
-                    grid.SetCell(row, column.Key, _factory.CreateRandom());
-
+                    var blastItem =  _factory.CreateRandom();
+                    blastItem.transform.position = grid.GridToWorldPosition(row,column.Key);
+                    grid.SetCell(row, column.Key,blastItem);
                 }
             }
         }

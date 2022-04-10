@@ -35,9 +35,8 @@ public class BlastManager
         {
             var item = _factory.CreateRandom();
             _grid.SetCell(row, column, item);
+            item.transform.position = _grid.GridToWorldPosition(row,column);
             item.name = $"GridItem_[{row},{column}]";
-            item.transform.SetParent(_grid.Transform,true);
-            item.SetImage(_blastConfig.Atlast.GetSprite($"{item.BlastColour}_Default"));
         });
 
     }
