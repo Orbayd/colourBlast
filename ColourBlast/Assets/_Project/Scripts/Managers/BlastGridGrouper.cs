@@ -9,7 +9,7 @@ public class BlastGridGrouper
     {
         _blastGroups = blastGroups;
     }
-    public void CreateBlastableGroups(AnimatedBlastGrid2D<BlastItem> _grid)
+    public void CreateGroups(AnimatedBlastGrid2D<BlastItem> _grid)
     {
         _blastGroups.Clear();
         _grid.TraverseAll((row, column) =>

@@ -5,7 +5,7 @@ public class BlastItem : MonoBehaviour
     [SerializeField]
     private SpriteRenderer _renderer;
 
-    public BlastColour BlastColour {get; set;}
+    public BlastColour BlastColour;
     
     public void SetImage(Sprite sprite)
     {

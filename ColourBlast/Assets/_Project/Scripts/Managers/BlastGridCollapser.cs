@@ -10,7 +10,18 @@ public class BlastGridCollapser
     {
         _emptyGroups = emptyGroups;
     }
-    public void Collapse(AnimatedBlastGrid2D<BlastItem> grid, int columnLenght, BlastGroup group)
+    public void Collapse(AnimatedBlastGrid2D<BlastItem> grid)
+    {
+        var emptyCells = grid.GetEmptyCells();
+        var blastGroup = new BlastGroup();
+        foreach (var emptyCell in emptyCells)
+        {
+            blastGroup.Add(emptyCell.Row,emptyCell.Column);
+        }
+        
+        Collapse(grid,blastGroup);
+    }
+    public void Collapse(AnimatedBlastGrid2D<BlastItem> grid, BlastGroup group)
     {
         var colums = group.GetColumns();
         foreach (var column in colums)
@@ -28,8 +39,8 @@ public class BlastGridCollapser
                 if (grid.GetCell(i, column.Key) != null)
                 {
                     GameObject.Destroy(grid.GetCell(i, column.Key).gameObject);
+                    grid.SetCell(i, column.Key, null);
                 }
-                grid.SetCell(i, column.Key, null);
                 emptyGroup.Add(i, column.Key);
             }
 
@@ -45,8 +56,8 @@ public class BlastGridCollapser
                     if (value != null)
                     {
                         grid.SetCell(i + (maxRange - minRange + 1), column.Key, value);
+                        grid.SetCell(i, column.Key, null);
                     }
-                    grid.SetCell(i, column.Key, null);
                     emptyGroup.Add(i, column.Key);
                     if (emptyGroup.Contains(i + (maxRange - minRange + 1), column.Key))
                     {

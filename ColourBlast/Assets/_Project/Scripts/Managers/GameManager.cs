@@ -17,17 +17,24 @@ public partial class GameManager : MonoBehaviour
 
 
     private AnimatedBlastGrid2D<BlastItem> _grid;
+    private AnimatedBlastGrid2D<BlastItem> _reserveGrid;
     private BlastManager _blastManager;
+    private BlastManager _reserveManager;
     
     public int ColourCount = 3; // Game Config
 
     void Start()
     {
         InitGrid();
+        var factory = new BlastItemFactory(_template,_blastgroupConfig.Atlast,ColourCount);
+        _blastManager = new BlastManager(_blastgroupConfig,factory);
 
-        _blastManager = new BlastManager(_blastgroupConfig,new BlastItemFactory(_template,ColourCount));
         _blastManager.CreateBlastGrid(_grid);
-        _blastManager.CreateBlastableGroups(_grid);
+        _blastManager.CreateGroups(_grid);
+
+        _reserveManager = new BlastManager(_blastgroupConfig,factory);
+        _reserveManager.CreateBlastGrid(_reserveGrid);
+
         if(!_blastManager.HasBlastable())
         {
             StartCoroutine(ShuffleRoutine());
@@ -40,31 +47,30 @@ public partial class GameManager : MonoBehaviour
         _grid = new AnimatedBlastGrid2D<BlastItem>(new BlastGrid2D<BlastItem>(_config));
         _grid.SetPosition(this.transform.position);
 
+        _reserveGrid = new AnimatedBlastGrid2D<BlastItem>(new BlastGrid2D<BlastItem>(_config));
+        _reserveGrid.SetPosition(new Vector2(0,0) - (new Vector2(0,(_grid.CellSize * _grid.ColumnLenght) + _grid.CellSize)));
+
         Camera.main.transform.position = new Vector3((float)_grid.RowLenght * _grid.CellSize / 2f , - (float)_grid.ColumnLenght/ _grid.CellSize * 2f,-10);
       
-    }
-
-    private BlastItem CreateBlastItem(int row, int column, Array blastColours)
-    {
-        var blastItem = GameObject.Instantiate(_template).GetComponent<BlastItem>();
-        blastItem.transform.SetPositionAndRotation(_grid.GridToWorldPosition(row, column), Quaternion.identity);
-        blastItem.BlastColour = (BlastColour)blastColours.GetValue(UnityEngine.Random.Range(0, Mathf.Clamp(ColourCount,1,blastColours.Length)));
-        return blastItem;
     }
 
     private IEnumerator ShuffleRoutine()
     {
         yield return new WaitForSecondsRealtime(3);
         _blastManager.Shuffle(_grid);
-        _blastManager.CreateBlastableGroups(_grid);
+        _blastManager.CreateGroups(_grid);
     }
 
     private IEnumerator CollapseRoutine(BlastGroup group)
     {
-        _blastManager.Collapse(_grid, _config.ColumnLenght, group);
+        _blastManager.Collapse(_grid, group);
         yield return new WaitForSecondsRealtime(3);
-        _blastManager.Fill(_grid);
-        _blastManager.CreateBlastableGroups(_grid);
+        _blastManager.FillFromSource(_grid,_reserveGrid);
+        _blastManager.CreateGroups(_grid);
+        
+        _reserveManager.Collapse(_reserveGrid);
+        yield return new WaitForSecondsRealtime(1);
+        _reserveManager.Fill(_reserveGrid);
         if (!_blastManager.HasBlastable())
         {
             StartCoroutine(ShuffleRoutine());
