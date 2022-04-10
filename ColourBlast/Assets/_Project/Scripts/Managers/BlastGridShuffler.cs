@@ -72,29 +72,29 @@ public class BlastGridShuffler
     }
 
 
-    private List<BlastGroup.CellPosition> GetPossibleDirection(int row, int column, bool[,] availabilityMap ,List<BlastGroup> emptyGroups)
+    private List<CellPosition> GetPossibleDirection(int row, int column, bool[,] availabilityMap ,List<BlastGroup> emptyGroups)
     {
-        List<BlastGroup.CellPosition> availiblePositions = new List<BlastGroup.CellPosition>();
+        List<CellPosition> availiblePositions = new List<CellPosition>();
 
         if (row != availabilityMap.GetLength(0) - 1)
         {
             if (!availabilityMap[row + 1, column])
             {
-                availiblePositions.Add(new BlastGroup.CellPosition() { Row = row + 1, Column = column });
+                availiblePositions.Add(new CellPosition() { Row = row + 1, Column = column });
             }
         }
         if (column != availabilityMap.GetLength(1) - 1)
         {
             if (!availabilityMap[row, column + 1])
             {
-                availiblePositions.Add(new BlastGroup.CellPosition() { Row = row, Column = column + 1 });
+                availiblePositions.Add(new CellPosition() { Row = row, Column = column + 1 });
             }
         }
         if (row != 0)
         {
             if (!availabilityMap[row - 1, column])
             {
-                availiblePositions.Add(new BlastGroup.CellPosition() { Row = row - 1, Column = column });
+                availiblePositions.Add(new CellPosition() { Row = row - 1, Column = column });
             }
         }
 
@@ -102,7 +102,7 @@ public class BlastGridShuffler
         {
             if (!availabilityMap[row, column - 1])
             {
-                availiblePositions.Add(new BlastGroup.CellPosition() { Row = row, Column = column - 1 });
+                availiblePositions.Add(new CellPosition() { Row = row, Column = column - 1 });
             }
         }
 
