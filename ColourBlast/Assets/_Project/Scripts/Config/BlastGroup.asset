@@ -9,9 +9,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ad06d4dfbed0a4f5991895b3e81b6a6c, type: 3}
-  m_Name: GridConfig
+  m_Script: {fileID: 11500000, guid: f9c6e891b4fa242a8a45d65afacb7ee0, type: 3}
+  m_Name: BlastGroup
   m_EditorClassIdentifier: 
-  RowLenght: 3
-  ColumnLenght: 3
-  CellSize: 2.5
+  A: 3
+  B: 4
+  C: 5
+  Atlast: {fileID: 4343727234628468602, guid: 40e4adf8e352143a0a2402718b63167c, type: 2}

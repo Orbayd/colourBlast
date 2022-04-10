@@ -10,7 +10,7 @@ public class BlastGroup
         public int Row;
         public int Column;
     }
-    public int Value;
+    public BlastColour Value;
     private List<CellPosition> _items = new List<CellPosition>();
 
     public bool IsBlastable => _items.Count > 1;
@@ -33,7 +33,6 @@ public class BlastGroup
     public void Clear()
     {
         _items.Clear();
-        Value = -1;
     }
 
     public Dictionary<int,List<int>> GetColumns()

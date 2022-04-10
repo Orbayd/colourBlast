@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-public class BlastGrid2D<T>
+public class BlastGrid2D<T> : IBlastGrid2D<T>
 {
 
     private T[,] _cells;
@@ -25,15 +25,9 @@ public class BlastGrid2D<T>
         CellSize = config.CellSize;
     }
 
-    public BlastGrid2D<T> SetPosition(Vector2 position)
+    public void SetPosition(Vector2 position)
     {
         _origin = position;
-        return this;
-    }
-
-    public void Build()
-    {
-        TraverseAll((x, y) => { /*TODO */});
     }
 
     public void TraverseAll(Action<int, int> callback)
@@ -47,12 +41,6 @@ public class BlastGrid2D<T>
         }
     }
 
-    public T[,] GetCells()
-    {
-        return _cells;
-    }
-
-
     public Vector2 GridToWorldPosition(int row, int column)
     {
         return new Vector2(column, - row) * CellSize - _origin;
@@ -60,8 +48,8 @@ public class BlastGrid2D<T>
 
     public Vector2Int WorldToGridPosition(Vector2 worldPosition)
     {
-        var x = Mathf.FloorToInt(-(worldPosition - _origin).y / CellSize);
-        var y = Mathf.FloorToInt((worldPosition - _origin).x / CellSize);
+        var x = Mathf.FloorToInt(-(worldPosition + _origin).y / CellSize);
+        var y = Mathf.FloorToInt((worldPosition + _origin).x / CellSize);
 
         return new Vector2Int(x, y);
     }
@@ -69,6 +57,7 @@ public class BlastGrid2D<T>
     public void SetCell(int row, int column, T data)
     {
         _cells[row, column] = data;
+
     }
 
     public void SetCell(Vector2 position, T data)

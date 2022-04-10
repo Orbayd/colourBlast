@@ -1,0 +1,92 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!687078895 &4343727234628468602
+SpriteAtlas:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: BlastItemAtlas
+  m_EditorData:
+    serializedVersion: 2
+    textureSettings:
+      serializedVersion: 2
+      anisoLevel: 1
+      compressionQuality: 50
+      maxTextureSize: 2048
+      textureCompression: 0
+      filterMode: 1
+      generateMipMaps: 0
+      readable: 0
+      crunchedCompression: 0
+      sRGB: 1
+    platformSettings: []
+    packingSettings:
+      serializedVersion: 2
+      padding: 4
+      blockOffset: 1
+      allowAlphaSplitting: 0
+      enableRotation: 1
+      enableTightPacking: 1
+    secondaryTextureSettings: {}
+    variantMultiplier: 1
+    packables:
+    - {fileID: 102900000, guid: 4b3ba3c682dfc4826bbf6dc1efa32a9e, type: 3}
+    totalSpriteSurfaceArea: 1572864
+    bindAsDefault: 1
+    isAtlasV2: 0
+    cachedData: {fileID: 0}
+  m_MasterAtlas: {fileID: 0}
+  m_PackedSprites:
+  - {fileID: 21300000, guid: 496b5d50b8ad74b06b3273afc3b50758, type: 3}
+  - {fileID: 21300000, guid: b33ddfc0c22d849c5929c2d9a0960bc7, type: 3}
+  - {fileID: 21300000, guid: 9ce881112fc4e475f9951886cbc7bc43, type: 3}
+  - {fileID: 21300000, guid: a46024c140cd44477990678def0d6c6a, type: 3}
+  - {fileID: 21300000, guid: 33efcbe194fed4838a9f321b9ee365ad, type: 3}
+  - {fileID: 21300000, guid: 75ed382359fa34fb19207846da058451, type: 3}
+  - {fileID: 21300000, guid: 3be1f8538cfb84fb6b213e3e8d254f89, type: 3}
+  - {fileID: 21300000, guid: bc112283943a14da39aee98cec7c3370, type: 3}
+  - {fileID: 21300000, guid: 9e236da5210104cd7b57fe616875560d, type: 3}
+  - {fileID: 21300000, guid: 5e1001f551758491492fba13452bd3e4, type: 3}
+  - {fileID: 21300000, guid: 851c1387b24c34f8b8e1ed04025a515f, type: 3}
+  - {fileID: 21300000, guid: 79581779a572e4491a0eabb1d986f379, type: 3}
+  - {fileID: 21300000, guid: ec8c589971e8742e39a2414fc380daba, type: 3}
+  - {fileID: 21300000, guid: 3668e0e97401143b29d60e10a02f3cc5, type: 3}
+  - {fileID: 21300000, guid: f65f782acf8444e8fad8a055769241cc, type: 3}
+  - {fileID: 21300000, guid: 5d50594a9ada0461aacab9a07f073826, type: 3}
+  - {fileID: 21300000, guid: 745a160c3138849999347386de68bd03, type: 3}
+  - {fileID: 21300000, guid: 379362ac93afc47128b6e5aae50c6fd4, type: 3}
+  - {fileID: 21300000, guid: 37a1a86d35c4f4c2aac3d3b212bff677, type: 3}
+  - {fileID: 21300000, guid: 174a69ed143ae4ec99ac5477f4f1d8c5, type: 3}
+  - {fileID: 21300000, guid: 44d333fd6932c4f868f9fe538ab04195, type: 3}
+  - {fileID: 21300000, guid: 9d6e4f2e95bed450a9fcdeb34cef5e70, type: 3}
+  - {fileID: 21300000, guid: 3240d15e1f9144618b4718545a042a82, type: 3}
+  - {fileID: 21300000, guid: 94de155e86f98487ba7500156aa98ccd, type: 3}
+  m_PackedSpriteNamesToIndex:
+  - Yellow_C
+  - Purple_B
+  - Pink_B
+  - Blue_B
+  - Pink_Default
+  - Blue_Default
+  - Green_C
+  - Blue_C
+  - Green_Default
+  - Yellow_B
+  - Green_B
+  - Purple_A
+  - Red_C
+  - Pink_C
+  - Yellow_Default
+  - Green_A
+  - Purple_C
+  - Red_Default
+  - Yellow_A
+  - Red_B
+  - Red_A
+  - Blue_A
+  - Purple_Default
+  - Pink_A
+  m_RenderDataMap: {}
+  m_Tag: BlastItemAtlas
+  m_IsVariant: 0
