@@ -30,7 +30,7 @@ public class BlastGridGrouper
 
     private void CreateBlastableGroupsInner(int row, int column, AnimatedBlastGrid2D<BlastItem> _grid, BlastGroup group)
     {
-        if (row < _grid.RowLenght - 1)
+        if (row < _grid.ColumnLenght - 1)
         {
             var rowNeigbor = _grid.GetCell(row + 1, column);
             if (group.Value == rowNeigbor.BlastColour)
@@ -43,7 +43,7 @@ public class BlastGridGrouper
             }
 
         }
-        if (column < _grid.ColumnLenght - 1)
+        if (column < _grid.RowLenght - 1)
         {
             var columnNeigbor = _grid.GetCell(row, column + 1);
             if (group.Value == columnNeigbor.BlastColour)
