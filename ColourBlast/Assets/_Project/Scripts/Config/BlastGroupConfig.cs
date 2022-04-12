@@ -10,5 +10,9 @@ public class BlastGroupConfig : ScriptableObject
     public int B;
     [Min(1)]
     public int C;
+
+    [Range(1,6)]
+    public int ColourCount = 3; 
+    
     public SpriteAtlas Atlast;
 }

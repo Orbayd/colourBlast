@@ -15,18 +15,27 @@ public partial class GameManager : MonoBehaviour
     [SerializeField]
     private GameObject _template;
 
-
     private AnimatedBlastGrid2D<BlastItem> _grid;
     private AnimatedBlastGrid2D<BlastItem> _reserveGrid;
     private BlastManager _blastManager;
     private BlastManager _reserveManager;
     
-    public int ColourCount = 3; // Game Config
-
     void Start()
     {
         InitGrid();
-        var factory = new BlastItemFactory(_template,_blastgroupConfig.Atlast,ColourCount);
+        InitCamera();
+    }
+
+    private void InitGrid()
+    {
+        var blastColours = Enum.GetValues(typeof(BlastColour));
+        _grid = new AnimatedBlastGrid2D<BlastItem>(new BlastGrid2D<BlastItem>(_config));
+        _grid.SetPosition(new Vector2(0, 0));
+
+        _reserveGrid = new AnimatedBlastGrid2D<BlastItem>(new BlastGrid2D<BlastItem>(_config));
+        _reserveGrid.SetPosition(new Vector2(0, 0) - (new Vector2(0, (_grid.CellSize * _grid.ColumnLenght) + _grid.CellSize)));
+
+        var factory = new BlastItemFactory(_template,_blastgroupConfig.Atlast,_blastgroupConfig.ColourCount);
         _blastManager = new BlastManager(_blastgroupConfig,factory);
 
         _blastManager.CreateBlastGrid(_grid);
@@ -39,18 +48,6 @@ public partial class GameManager : MonoBehaviour
         {
             StartCoroutine(ShuffleRoutine());
         }
-    }
-
-    private void InitGrid()
-    {
-        var blastColours = Enum.GetValues(typeof(BlastColour));
-        _grid = new AnimatedBlastGrid2D<BlastItem>(new BlastGrid2D<BlastItem>(_config));
-        _grid.SetPosition(new Vector2(0, 0));
-
-        _reserveGrid = new AnimatedBlastGrid2D<BlastItem>(new BlastGrid2D<BlastItem>(_config));
-        _reserveGrid.SetPosition(new Vector2(0, 0) - (new Vector2(0, (_grid.CellSize * _grid.ColumnLenght) + _grid.CellSize)));
-
-        InitCamera();
 
     }
 
@@ -94,7 +91,7 @@ public partial class GameManager : MonoBehaviour
         _blastManager.CreateGroups(_grid);
         
         _reserveManager.Collapse(_reserveGrid);
-        yield return new WaitForSecondsRealtime(1);
+        //yield return new WaitForSecondsRealtime(1);
         _reserveManager.Fill(_reserveGrid);
         if (!_blastManager.HasBlastable())
         {
@@ -109,7 +106,6 @@ public partial class GameManager : MonoBehaviour
         if (Input.GetMouseButtonDown(0))
         {
             var worldPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-
             var gridPosition = _grid.WorldToGridPosition(worldPosition);
             Debug.Log($"WorldPosition {worldPosition} Grid Position [{gridPosition.x},{gridPosition.y}]");
             var group = _blastManager.Find(gridPosition.x, gridPosition.y);
