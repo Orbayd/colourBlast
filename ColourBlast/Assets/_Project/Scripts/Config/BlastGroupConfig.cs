@@ -14,5 +14,8 @@ public class BlastGroupConfig : ScriptableObject
     [Range(1,6)]
     public int ColourCount = 3; 
     
+    [Header("Resources")]
     public SpriteAtlas Atlast;
+
+    public GameObject Template;
 }

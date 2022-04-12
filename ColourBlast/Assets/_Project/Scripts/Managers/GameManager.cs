@@ -11,10 +11,6 @@ public partial class GameManager : MonoBehaviour
 
     [SerializeField]
     BlastGroupConfig _blastgroupConfig;
-
-    [SerializeField]
-    private GameObject _template;
-
     private AnimatedBlastGrid2D<BlastItem> _grid;
     private AnimatedBlastGrid2D<BlastItem> _reserveGrid;
     private BlastManager _blastManager;
@@ -35,7 +31,7 @@ public partial class GameManager : MonoBehaviour
         _reserveGrid = new AnimatedBlastGrid2D<BlastItem>(new BlastGrid2D<BlastItem>(_config));
         _reserveGrid.SetPosition(new Vector2(0, 0) - (new Vector2(0, (_grid.CellSize * _grid.ColumnLenght) + _grid.CellSize)));
 
-        var factory = new BlastItemFactory(_template,_blastgroupConfig.Atlast,_blastgroupConfig.ColourCount);
+        var factory = new BlastItemFactory(_blastgroupConfig.Template,_blastgroupConfig.Atlast,_blastgroupConfig.ColourCount);
         _blastManager = new BlastManager(_blastgroupConfig,factory);
 
         _blastManager.CreateBlastGrid(_grid);
@@ -78,7 +74,7 @@ public partial class GameManager : MonoBehaviour
 
     private IEnumerator ShuffleRoutine()
     {
-        yield return new WaitForSecondsRealtime(3);
+        yield return new WaitForSecondsRealtime(0.5f);
         _blastManager.Shuffle(_grid);
         _blastManager.CreateGroups(_grid);
     }
@@ -86,13 +82,12 @@ public partial class GameManager : MonoBehaviour
     private IEnumerator CollapseRoutine(BlastGroup group)
     {
         _blastManager.Collapse(_grid, group);
-        yield return new WaitForSecondsRealtime(3);
         _blastManager.FillFromSource(_grid,_reserveGrid);
         _blastManager.CreateGroups(_grid);
         
         _reserveManager.Collapse(_reserveGrid);
-        //yield return new WaitForSecondsRealtime(1);
         _reserveManager.Fill(_reserveGrid);
+        yield return null;
         if (!_blastManager.HasBlastable())
         {
             StartCoroutine(ShuffleRoutine());
@@ -101,7 +96,7 @@ public partial class GameManager : MonoBehaviour
 
     private void Update()
     {
-        DrawGridBordersDebug();
+        //DrawGridBordersDebug();
 
         if (Input.GetMouseButtonDown(0))
         {
