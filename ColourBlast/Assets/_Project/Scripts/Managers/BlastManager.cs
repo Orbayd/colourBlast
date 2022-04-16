@@ -1,40 +1,43 @@
 
 using System.Collections.Generic;
 using System.Linq;
+using ColourBlast.Grid2D;
+using ColourBlast.Helpers;
 using UnityEngine;
 
 public class BlastManager
 {
     private BlastGroupConfig _blastConfig;
-    private BlastItemFactory _factory;
-    private List<BlastGroup> _blastGroups = new List<BlastGroup>();
-    private BlastGridShuffler _shuffler;
-    private BlastGridCollapser _collapser;
-    private BlastGridFiller _filler;
-    private BlastGridGrouper _grouper;
+    private IBlastItemFactory _factory;
+    // private List<BlastGroup> _blastGroups = new List<BlastGroup>();
+    private IShuffleCommand _shuffler;
+    private ICollapseCommand _collapser;
+    private IFillCommand _filler;
+    private IGroupCommand _grouper;
 
-    public BlastManager(BlastGroupConfig blastConfig, BlastItemFactory factory)
+    public BlastManager(BlastGroupConfig blastConfig, IBlastItemFactory factory,IGroupCommand grouper, ICollapseCommand collpaser, IFillCommand filler,IShuffleCommand shuffler)
     {
         _blastConfig = blastConfig;
         _factory = factory;
 
-        _shuffler = new BlastGridShuffler();
-        _collapser = new BlastGridCollapser();
-        _filler = new BlastGridFiller(_factory);
-        _grouper = new BlastGridGrouper(_blastGroups);
+        _shuffler = shuffler;
+        _filler = filler;
+        _collapser = collpaser;
+        _grouper = grouper;
     }
+
     public BlastGroup Find(int row, int column)
     {
-       return _grouper.Find(row,column);
+       return _grouper.BlastGroups.FirstOrDefault(x=> x.Contains(row,column));
     }
     public void CreateBlastGrid(AnimatedBlastGrid2D<BlastItem> _grid)
     {
-        _grid.TraverseAll((row, column) =>
+        _grid.TraverseAll((postion) =>
         {
             var item = _factory.CreateRandom();
-            _grid.SetCell(row, column, item);
-            item.transform.position = _grid.GridToWorldPosition(row,column);
-            item.name = $"GridItem_[{row},{column}]";
+            _grid.SetCell(postion.Row, postion.Column, item);
+            item.transform.position = _grid.GridToWorldPosition(postion.Row,postion.Column);
+            item.name = $"GridItem_[{postion.Row},{postion.Column}]";
             var sprite = item.GetComponent<SpriteRenderer>().sprite;
             var layout = _grid.GridLayout;
             item.transform.localScale = new Vector3(layout.CellWidth / sprite.bounds.size.x , layout.CellHeight / sprite.bounds.size.x, 1); 
@@ -60,10 +63,6 @@ public class BlastManager
     {
         _filler.Fill(grid);
     }
-    public void FillFromSource(AnimatedBlastGrid2D<BlastItem> grid , AnimatedBlastGrid2D<BlastItem> reservegrid)
-    {
-        _filler.Fill(grid,reservegrid);
-    }
 
     public void Shuffle(AnimatedBlastGrid2D<BlastItem> grid)
     {
@@ -71,13 +70,13 @@ public class BlastManager
     }
     public bool HasBlastable()
     {
-        return _blastGroups.Any(x => x.IsBlastable);
+        return _grouper.BlastGroups.Any(x => x.IsBlastable);
     }
 
     private void SetBlastGroupSprites(AnimatedBlastGrid2D<BlastItem> grid)
     {
      
-        foreach (var blastGroup in _blastGroups)
+        foreach (var blastGroup in _grouper.BlastGroups)
         {
             var positions = blastGroup.GetCellPositions();
             Sprite sprite;

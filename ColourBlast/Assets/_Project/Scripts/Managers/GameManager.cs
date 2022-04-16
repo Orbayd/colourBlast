@@ -1,10 +1,10 @@
 using System;
 using System.Collections;
-using System.Linq;
-using TMPro;
 using UnityEngine;
+using ColourBlast.Grid2D;
+using ColourBlast.Helpers;
 
-public partial class GameManager : MonoBehaviour
+public class GameManager : MonoBehaviour
 {
     [SerializeField]
     BlastGridConfig _config;
@@ -18,73 +18,90 @@ public partial class GameManager : MonoBehaviour
 
     [SerializeField]
     private GridAnchorPosition AnchorPosition;
-    
+
     [SerializeField]
     private bool IsFlexible;
-    
+
     [SerializeField]
     private bool IsFixedSize;
-   
+
+    private bool IsProcessing = false;
+
     void Start()
     {
         InitGrid();
-        //InitCamera();
+    }
+    void OnEnable()
+    {
+        AddEvents();
+    }
+
+    void OnDisable()
+    {
+        RemoveEvents();
     }
 
     private void InitGrid()
     {
         var blastColours = Enum.GetValues(typeof(BlastColour));
-        var gridLayout = new GridLayout2D(_config.RowLenght,_config.ColumnLenght,_config.CellSize , IsFixedSize, IsFlexible);
+        var gridLayout = new GridLayout2D(_config.RowLenght, _config.ColumnLenght, _config.CellSize, IsFixedSize, IsFlexible);
         gridLayout.AnchorPosition = AnchorPosition;
-        _grid = new AnimatedBlastGrid2D<BlastItem>(new BlastGrid2D<BlastItem>(_config),gridLayout);
+        _grid = new AnimatedBlastGrid2D<BlastItem>(new BlastGrid2D<BlastItem>(_config), gridLayout);
 
-         var reserveLayout = new GridLayout2D(_config.RowLenght,_config.ColumnLenght,_config.CellSize , IsFixedSize, IsFlexible);
+        var reserveLayout = new GridLayout2D(_config.RowLenght, _config.ColumnLenght, _config.CellSize, IsFixedSize, IsFlexible);
         reserveLayout.AnchorPosition = AnchorPosition;
-       
-        _reserveGrid = new AnimatedBlastGrid2D<BlastItem>(new BlastGrid2D<BlastItem>(_config),reserveLayout);
 
-        var factory = new BlastItemFactory(_blastgroupConfig.Template,_blastgroupConfig.Atlast,_blastgroupConfig.ColourCount);
-        _blastManager = new BlastManager(_blastgroupConfig,factory);
+        _reserveGrid = new AnimatedBlastGrid2D<BlastItem>(new BlastGrid2D<BlastItem>(_config), reserveLayout);
+
+        var factory = new BlastItemFactory(_blastgroupConfig.Template, _blastgroupConfig.Atlast, _blastgroupConfig.ColourCount);
+       
+        var grouper = new BlastGridGrouper();
+        var shuffler = new BlastGridShuffler();
+        var collpaser = new  BlastGridCollapser();
+        var sourceFiller = new BlastGridFiller(new SourceFiller(_reserveGrid));
+        _blastManager = new BlastManager(_blastgroupConfig,factory,grouper,collpaser,sourceFiller,shuffler);
 
         _blastManager.CreateBlastGrid(_grid);
         _blastManager.CreateGroups(_grid);
 
-        _reserveManager = new BlastManager(_blastgroupConfig,factory);
-        reserveLayout.Offset = new Vector2(0,reserveLayout.GetBounds().y);
+        var randomFiller = new BlastGridFiller(new RandomFiller(factory));
+        _reserveManager = new BlastManager(_blastgroupConfig,factory,grouper,collpaser,randomFiller,shuffler);
+        reserveLayout.Offset = new Vector2(0, reserveLayout.GetGridBounds().y);
         _reserveManager.CreateBlastGrid(_reserveGrid);
 
-        if(!_blastManager.HasBlastable())
+        _grid.AllAnimationsCompleted += ()=>
+        {
+            IsProcessing = false;
+        };
+
+        if (!_blastManager.HasBlastable())
         {
             StartCoroutine(ShuffleRoutine());
         }
-
     }
 
-    private void InitCamera()
+    float interval = 1/60 * 2;
+    float colldown = 1/60 * 2;
+
+    public bool IsDebugMode;
+    private void Update()
     {
-        var verticalExtend  = Camera.main.orthographicSize * 2;
-        var horizontalExtend = verticalExtend * Screen.width / Screen.height;
-
-        var gridVerticalExtend =  (float)_grid.ColumnLenght * _grid.CellSize ;
-        var gridHorizontalExtend = (float)_grid.RowLenght * _grid.CellSize ;
-
-        if(gridHorizontalExtend > horizontalExtend)
+        if(!IsDebugMode)
         {
-            Camera.main.orthographicSize *= gridHorizontalExtend / horizontalExtend;
+            return;
         }
-        if(gridVerticalExtend > verticalExtend)
+        colldown-= Time.deltaTime;
+        if(colldown <= 0.0f)
         {
-            Camera.main.orthographicSize *= gridVerticalExtend / verticalExtend;
+            colldown = interval;
+            var rowId = UnityEngine.Random.Range(0,_grid.RowLenght);
+            var columnId = UnityEngine.Random.Range(0,_grid.ColumnLenght);
+
+
+            OnCellClicked(new OnClickEventHandler(new CellPosition(rowId,columnId)));
+
         }
-
-        verticalExtend  = Camera.main.orthographicSize;
-        horizontalExtend = Screen.width / Screen.height * verticalExtend;
-
-        Camera.main.transform.position = new Vector3(gridHorizontalExtend / 2f - _grid.CellSize / 2f,
-                                                      - verticalExtend +_grid.CellSize / 2f , -10);
-    
     }
-
     private IEnumerator ShuffleRoutine()
     {
         yield return new WaitForSecondsRealtime(0.5f);
@@ -94,10 +111,11 @@ public partial class GameManager : MonoBehaviour
 
     private IEnumerator CollapseRoutine(BlastGroup group)
     {
+        IsProcessing = true;
         _blastManager.Collapse(_grid, group);
-        _blastManager.FillFromSource(_grid,_reserveGrid);
+        _blastManager.Fill(_grid);
         _blastManager.CreateGroups(_grid);
-        
+
         _reserveManager.Collapse(_reserveGrid);
         _reserveManager.Fill(_reserveGrid);
         yield return null;
@@ -107,21 +125,35 @@ public partial class GameManager : MonoBehaviour
         }
     }
 
-    private void Update()
+    private void OnCellClicked(OnClickEventHandler e)
     {
-        //DrawGridBordersDebug();
-
-        if (Input.GetMouseButtonDown(0))
+        if(IsProcessing)
         {
-            var worldPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-            var gridPosition = _grid.WorldToGridPosition(worldPosition);
-            Debug.Log($"WorldPosition {worldPosition} Grid Position [{gridPosition.x},{gridPosition.y}]");
-            var group = _blastManager.Find(gridPosition.x, gridPosition.y);
-            if (group != null && group.IsBlastable)
-            {
-                StartCoroutine(CollapseRoutine(group));
-            }
+            return;
         }
+        
+        var position = e.Positon;
+        var group = _blastManager.Find(position.Row, position.Column);
+        if (group != null && group.IsBlastable)
+        {
+            StartCoroutine(CollapseRoutine(group));
+        }
+    }
+
+    private void AddEvents()
+    {
+        MessageBus.Subscribe<OnClickEventHandler>((e) => OnCellClicked(e));
+    }
+
+    private void RemoveEvents()
+    {
+        MessageBus.UnSubscribe<OnClickEventHandler>();
+    }
+
+    void OnDrawGizmosSelected()
+    {
+        DebugHelpers.GizmosCameraCorners();
+        DebugHelpers.GizmosGrid(_grid);
     }
 
 }

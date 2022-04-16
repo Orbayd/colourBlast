@@ -13,5 +13,5 @@ MonoBehaviour:
   m_Name: GridConfig
   m_EditorClassIdentifier: 
   ColumnLenght: 3
-  RowLenght: 3
+  RowLenght: 4
   CellSize: 2.5
