@@ -4,29 +4,28 @@ using System.Linq;
 
 public class BlastGridShuffler
 {
-    private List<BlastGroup> _emptyGroups;
-    public BlastGridShuffler(List<BlastGroup> emptyGroups)
+    public List<CellPosition> _emptyPositions;
+
+    public BlastGridShuffler()
     {
-        _emptyGroups = emptyGroups;
+        
     }
     public void Shuffle(AnimatedBlastGrid2D<BlastItem> grid)
     {
         bool[,] availabilityMap = new bool[grid.RowLenght, grid.ColumnLenght];
-
-        var rowIndiceis = Enumerable.Range(0, grid.RowLenght);
-        var ColumnIndiceis = Enumerable.Range(0, grid.ColumnLenght);
-        var valueCountPairs = GroupByValue(grid ,_emptyGroups);
-
+        _emptyPositions = grid.GetEmptyCells().ToList();
+        var valueCountPairs = GroupByValue(grid);
         foreach (var pair in valueCountPairs)
         {
-            var freecell = _emptyGroups.First().RandomCell();
+            //var freecell = _emptyGroups.First().RandomCell();
+            var freecell = RandomCell();
 
             var blastItem = pair.Value.First();
             grid.SetCell(freecell.Row, freecell.Column, blastItem);
             pair.Value.Remove(blastItem);
 
             availabilityMap[freecell.Row, freecell.Column] = true;
-            var dirs = GetPossibleDirection(freecell.Row, freecell.Column, availabilityMap,_emptyGroups).Take(pair.Value.Count);
+            var dirs = GetPossibleDirection(freecell.Row, freecell.Column, availabilityMap).Take(pair.Value.Count);
             foreach (var direction in dirs)
             {
                 blastItem = pair.Value.First();
@@ -34,12 +33,12 @@ public class BlastGridShuffler
                 pair.Value.Remove(blastItem);
 
                 availabilityMap[direction.Row, direction.Column] = true;
-                _emptyGroups.First().Remove(direction.Row, direction.Column);
+                _emptyPositions.RemoveAll(x => x.Row == direction.Row && x.Column == direction.Column);
             }
 
             for (int i = 0; i < pair.Value.Count; i++)
             {
-                var r = _emptyGroups.First().RandomCell();
+                var r = RandomCell();
 
                 blastItem = pair.Value.First();
                 grid.SetCell(r.Row, r.Column, blastItem);
@@ -47,18 +46,17 @@ public class BlastGridShuffler
                 availabilityMap[r.Row, r.Column] = true;
             }
         }
+
+        _emptyPositions.Clear();
     }
 
 
-    private Dictionary<BlastColour, List<BlastItem>> GroupByValue(AnimatedBlastGrid2D<BlastItem> grid,List<BlastGroup> emptyGroups)
+    private Dictionary<BlastColour, List<BlastItem>> GroupByValue(AnimatedBlastGrid2D<BlastItem> grid)
     {
         var result = new Dictionary<BlastColour, List<BlastItem>>();
-        var freeCells = new BlastGroup();
-        emptyGroups.Clear();
-        emptyGroups.Add(freeCells);
+        
         grid.TraverseAll((row, column) =>
         {
-            freeCells.Add(row, column);
             var value = grid.GetCell(row, column);
             if (!result.ContainsKey(value.BlastColour))
             {
@@ -72,7 +70,7 @@ public class BlastGridShuffler
     }
 
 
-    private List<CellPosition> GetPossibleDirection(int row, int column, bool[,] availabilityMap ,List<BlastGroup> emptyGroups)
+    private List<CellPosition> GetPossibleDirection(int row, int column, bool[,] availabilityMap)
     {
         List<CellPosition> availiblePositions = new List<CellPosition>();
 
@@ -107,6 +105,15 @@ public class BlastGridShuffler
         }
 
         return availiblePositions;
+    }
+
+
+    public CellPosition RandomCell()
+    {
+        var rand = UnityEngine.Random.Range(0, _emptyPositions.Count);
+        var randomCell = _emptyPositions.ElementAt(rand);
+        _emptyPositions.Remove(randomCell);
+        return randomCell;
     }
 
 

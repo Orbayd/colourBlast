@@ -5,31 +5,16 @@ using UnityEngine;
 
 public class BlastGridCollapser
 {   
-    private List<BlastGroup> _emptyGroups;
-    public BlastGridCollapser(List<BlastGroup> emptyGroups)
+    public BlastGridCollapser()
     {
-        _emptyGroups = emptyGroups;
     }
-    public void Collapse(AnimatedBlastGrid2D<BlastItem> grid)
+
+    public void Collapse(AnimatedBlastGrid2D<BlastItem> grid, IEnumerable<CellPosition> source)
     {
-        var emptyCells = grid.GetEmptyCells();
-        var blastGroup = new BlastGroup();
-        foreach (var emptyCell in emptyCells)
-        {
-            blastGroup.Add(emptyCell.Row,emptyCell.Column);
-        }
-        
-        Collapse(grid,blastGroup);
-    }
-    public void Collapse(AnimatedBlastGrid2D<BlastItem> grid, BlastGroup group)
-    {
-        var colums = group.GetColumns();
+        var colums = grid.GroupByColumns(source);
         foreach (var column in colums)
         {
-            var emptyGroup = new BlastGroup();
-            _emptyGroups.Add(emptyGroup);
-            Debug.Log("Collapsing");
-            Debug.Log($"Column[{column.Key}] Rows: " + string.Join(",", column.Value.Select(x => x.ToString())));
+            //Debug.Log($"Column[{column.Key}] Rows: " + string.Join(",", column.Value.Select(x => x.ToString())));
             var rowIds = column.Value.OrderByDescending(x => x);
 
             var maxRange = rowIds.First();
@@ -39,9 +24,9 @@ public class BlastGridCollapser
                 if (grid.GetCell(i, column.Key) != null)
                 {
                     GameObject.Destroy(grid.GetCell(i, column.Key).gameObject);
-                    grid.SetCell(i, column.Key, null);
+                    grid.SetEmpty(i, column.Key);
                 }
-                emptyGroup.Add(i, column.Key);
+                // emptyGroup.Add(i, column.Key);
             }
 
             if (minRange > 0)
@@ -56,13 +41,13 @@ public class BlastGridCollapser
                     if (value != null)
                     {
                         grid.SetCell(i + (maxRange - minRange + 1), column.Key, value);
-                        grid.SetCell(i, column.Key, null);
+                        grid.SetEmpty(i, column.Key);
                     }
-                    emptyGroup.Add(i, column.Key);
-                    if (emptyGroup.Contains(i + (maxRange - minRange + 1), column.Key))
-                    {
-                        emptyGroup.Remove(i + (maxRange - minRange + 1), column.Key);
-                    }
+                    // emptyGroup.Add(i, column.Key);
+                    // if (emptyGroup.Contains(i + (maxRange - minRange + 1), column.Key))
+                    // {
+                    //     emptyGroup.Remove(i + (maxRange - minRange + 1), column.Key);
+                    // }
                 }
             }
         }

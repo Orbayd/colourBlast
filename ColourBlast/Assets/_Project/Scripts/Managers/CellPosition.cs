@@ -4,6 +4,12 @@
         public int Row;
         public int Column;
 
+        public CellPosition(int row, int column)
+        {
+            Row = row;
+            Column = column;
+        }
+        
         public CellPosition Left()
         {
             return new CellPosition(){ Row = this.Row -1 ,Column = Column};
