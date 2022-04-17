@@ -46,7 +46,7 @@ namespace ColourBlast
             });
 
         }
-        public void CreateBlastGroups(AnimatedBlastGrid2D<BlastItem> grid)
+        public void CreateGroups(AnimatedBlastGrid2D<BlastItem> grid)
         {
             _grouper.CreateGroups(grid);
             SetBlastGroupSprites(grid);

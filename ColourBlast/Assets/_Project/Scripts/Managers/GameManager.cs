@@ -29,9 +29,16 @@ namespace ColourBlast
 
         private bool IsProcessing = false;
 
+        [Header("Debug")]
+        [SerializeField]
+        public bool IsDebugMode;
+
+        float interval = 1/*1/60 * 2 */;
+        float colldown = 1 / 60 * 2;
+
         void Start()
         {
-            InitGrid();
+            Init();
         }
         void OnEnable()
         {
@@ -43,39 +50,10 @@ namespace ColourBlast
             RemoveEvents();
         }
 
-        private void InitGrid()
+        private void Init()
         {
-            var poolService = new PoolingService((_config.RowLenght * _config.ColumnLenght) * 2, _blastgroupConfig.Template);
-            poolService.Init();
-
-
-            var gridFactory = new Grid2DFactory(_config);
-            _grid = gridFactory.Create();
-
-
-            _reserveGrid = gridFactory.Create();
-            _reserveGrid.GridLayout.Offset = new Vector2(0, _reserveGrid.GridLayout.GetGridBounds().y);
-
-            var factory = new BlastItemFactory(poolService, _blastgroupConfig.Atlast, _blastgroupConfig.ColourCount);
-
-            var grouper = new BlastGridGrouper();
-            var shuffler = new BlastGridShuffler();
-            var collpaser = new BlastGridCollapser(poolService);
-            var sourceFiller = new BlastGridFiller(new SourceFiller(_reserveGrid));
-            _blastManager = new BlastManager(_blastgroupConfig, factory, grouper, collpaser, sourceFiller, shuffler);
-
-            _blastManager.CreateBlastItems(_grid);
-            _blastManager.CreateBlastGroups(_grid);
-
-            var randomFiller = new BlastGridFiller(new RandomFiller(factory));
-            _reserveManager = new BlastManager(_blastgroupConfig, factory, grouper, collpaser, randomFiller, shuffler);
-
-            _reserveManager.CreateBlastItems(_reserveGrid);
-
-            _grid.AllAnimationsCompleted += () =>
-            {
-                IsProcessing = false;
-            };
+            InitGrid();
+            InitDependencies();
 
             if (!_blastManager.HasBlastable())
             {
@@ -83,10 +61,39 @@ namespace ColourBlast
             }
         }
 
-        float interval = 1/*1/60 * 2 */;
-        float colldown = 1 / 60 * 2;
+        private void InitGrid()
+        {
+            var gridFactory = new Grid2DFactory(_config);
+            _grid = gridFactory.Create();
+            _reserveGrid = gridFactory.Create();
+            _reserveGrid.GridLayout.Offset = new Vector2(0, _reserveGrid.GridLayout.GetGridBounds().y);
+            _grid.AllAnimationsCompleted += () =>
+            {
+                IsProcessing = false;
+            };         
+        }
 
-        public bool IsDebugMode;
+        private void InitDependencies()
+        {
+            var poolService = new PoolingService((_config.RowLenght * _config.ColumnLenght) * 2, _blastgroupConfig.Template);
+            poolService.Init();
+
+            var factory = new BlastItemFactory(poolService, _blastgroupConfig.Atlast, _blastgroupConfig.ColourCount);
+
+            var grouper = new BlastGridGrouper();
+            var shuffler = new BlastGridShuffler();
+            var collpaser = new BlastGridCollapser(poolService);
+            var sourceFiller = new BlastGridFiller(new SourceFiller(_reserveGrid));
+            var randomFiller = new BlastGridFiller(new RandomFiller(factory));
+
+            _blastManager = new BlastManager(_blastgroupConfig, factory, grouper, collpaser, sourceFiller, shuffler);
+            _reserveManager = new BlastManager(_blastgroupConfig, factory, grouper, collpaser, randomFiller, shuffler);
+
+            _blastManager.CreateBlastItems(_grid);
+            _blastManager.CreateGroups(_grid);
+            _reserveManager.CreateBlastItems(_reserveGrid);
+        }
+
         private void Update()
         {
             if (!IsDebugMode)
@@ -110,7 +117,7 @@ namespace ColourBlast
             IsProcessing = true;
             yield return new WaitForSecondsRealtime(0.5f);
             _blastManager.Shuffle(_grid);
-            _blastManager.CreateBlastGroups(_grid);
+            _blastManager.CreateGroups(_grid);
         }
 
         private IEnumerator CollapseRoutine(BlastGroup group)
@@ -118,7 +125,7 @@ namespace ColourBlast
             IsProcessing = true;
             _blastManager.Collapse(_grid, group);
             _blastManager.Fill(_grid);
-            _blastManager.CreateBlastGroups(_grid);
+            _blastManager.CreateGroups(_grid);
 
             _reserveManager.Collapse(_reserveGrid);
             _reserveManager.Fill(_reserveGrid);

@@ -239,7 +239,7 @@ MonoBehaviour:
   _blastgroupConfig: {fileID: 11400000, guid: 7373864ba08144e8da19b331c0135e83, type: 2}
   AnchorPosition: 0
   IsFlexible: 0
-  IsFixedSize: 1
+  IsFixedSize: 0
   IsDebugMode: 0
 --- !u!4 &1096570040
 Transform:
