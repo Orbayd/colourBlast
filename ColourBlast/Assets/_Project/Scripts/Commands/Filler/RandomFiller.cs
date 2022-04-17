@@ -9,7 +9,7 @@ public class RandomFiller : IFillStrategy
     }
     public BlastItem Execute(AnimatedBlastGrid2D<BlastItem> grid,CellPosition position)
     {
-        var blastItem = _factory.CreateRandom();
+        var blastItem = _factory.CreateRandom(grid.GridToWorldPosition(position));
         blastItem.transform.position = grid.GridToWorldPosition(position.Row,position.Column);
         return blastItem;
     }

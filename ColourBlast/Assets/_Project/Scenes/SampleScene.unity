@@ -240,6 +240,7 @@ MonoBehaviour:
   AnchorPosition: 0
   IsFlexible: 0
   IsFixedSize: 1
+  IsDebugMode: 0
 --- !u!4 &1096570040
 Transform:
   m_ObjectHideFlags: 0

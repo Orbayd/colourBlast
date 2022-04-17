@@ -43,21 +43,22 @@ public class GameManager : MonoBehaviour
 
     private void InitGrid()
     {
-        var blastColours = Enum.GetValues(typeof(BlastColour));
+        var poolService = new PoolingService((_config.RowLenght * _config.ColumnLenght) * 2,_blastgroupConfig.Template);
+        poolService.Init();
+        
         var gridLayout = new GridLayout2D(_config.RowLenght, _config.ColumnLenght, _config.CellSize, IsFixedSize, IsFlexible);
         gridLayout.AnchorPosition = AnchorPosition;
         _grid = new AnimatedBlastGrid2D<BlastItem>(new BlastGrid2D<BlastItem>(_config), gridLayout);
 
         var reserveLayout = new GridLayout2D(_config.RowLenght, _config.ColumnLenght, _config.CellSize, IsFixedSize, IsFlexible);
         reserveLayout.AnchorPosition = AnchorPosition;
-
         _reserveGrid = new AnimatedBlastGrid2D<BlastItem>(new BlastGrid2D<BlastItem>(_config), reserveLayout);
 
-        var factory = new BlastItemFactory(_blastgroupConfig.Template, _blastgroupConfig.Atlast, _blastgroupConfig.ColourCount);
+        var factory = new BlastItemFactory(poolService, _blastgroupConfig.Atlast, _blastgroupConfig.ColourCount);
        
         var grouper = new BlastGridGrouper();
         var shuffler = new BlastGridShuffler();
-        var collpaser = new  BlastGridCollapser();
+        var collpaser = new  BlastGridCollapser(poolService);
         var sourceFiller = new BlastGridFiller(new SourceFiller(_reserveGrid));
         _blastManager = new BlastManager(_blastgroupConfig,factory,grouper,collpaser,sourceFiller,shuffler);
 
@@ -104,7 +105,8 @@ public class GameManager : MonoBehaviour
     }
     private IEnumerator ShuffleRoutine()
     {
-        yield return new WaitForSecondsRealtime(0.5f);
+        IsProcessing = true;
+         yield return null;
         _blastManager.Shuffle(_grid);
         _blastManager.CreateGroups(_grid);
     }

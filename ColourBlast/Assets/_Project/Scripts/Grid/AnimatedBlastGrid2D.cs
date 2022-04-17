@@ -38,6 +38,10 @@ namespace ColourBlast.Grid2D
         {
             return GridLayout.GetGridPosition(row, column);
         }
+        public Vector2 GridToWorldPosition(CellPosition position)
+        {
+            return GridToWorldPosition(position.Row,position.Column);
+        }
 
         public void SetCell(int row, int column, T data)
         {

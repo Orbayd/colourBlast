@@ -6,7 +6,13 @@ using ColourBlast.Helpers;
 using UnityEngine;
 
 public class BlastGridCollapser : ICollapseCommand
-{   
+{
+    public PoolingService _poolService;
+    public BlastGridCollapser(PoolingService poolService)
+    {
+        _poolService = poolService;
+    }
+
     public void Collapse(AnimatedBlastGrid2D<BlastItem> grid, IEnumerable<CellPosition> source)
     {
         var colums = grid.GroupByColumns(source);
@@ -20,7 +26,8 @@ public class BlastGridCollapser : ICollapseCommand
             {
                 if (grid.GetCell(i, column.Key) != null)
                 {
-                    GameObject.Destroy(grid.GetCell(i, column.Key).gameObject);
+                    //GameObject.Destroy(grid.GetCell(i, column.Key).gameObject);
+                    _poolService.Release(grid.GetCell(i, column.Key).gameObject);
                     grid.SetEmpty(i, column.Key);
                 }
             }
@@ -31,7 +38,8 @@ public class BlastGridCollapser : ICollapseCommand
                 {
                     if (grid.GetCell(i + (maxRange - minRange + 1), column.Key) != null)
                     {
-                        GameObject.Destroy(grid.GetCell(i + (maxRange - minRange + 1), column.Key).gameObject);
+                        //GameObject.Destroy(grid.GetCell(i + (maxRange - minRange + 1), column.Key).gameObject);
+                        _poolService.Release(grid.GetCell(i + (maxRange - minRange + 1), column.Key).gameObject);
                     }
                     var value = grid.GetCell(i, column.Key);
                     if (value != null)
