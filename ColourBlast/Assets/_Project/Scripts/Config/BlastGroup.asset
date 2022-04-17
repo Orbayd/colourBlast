@@ -15,6 +15,6 @@ MonoBehaviour:
   A: 3
   B: 4
   C: 5
-  ColourCount: 2
+  ColourCount: 6
   Atlast: {fileID: 4343727234628468602, guid: 40e4adf8e352143a0a2402718b63167c, type: 2}
   Template: {fileID: 2525958384753082483, guid: 85606589889754579a20387d2600401c, type: 3}

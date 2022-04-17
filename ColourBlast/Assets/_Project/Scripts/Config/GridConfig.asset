@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ad06d4dfbed0a4f5991895b3e81b6a6c, type: 3}
   m_Name: GridConfig
   m_EditorClassIdentifier: 
-  ColumnLenght: 4
-  RowLenght: 4
+  ColumnLenght: 8
+  RowLenght: 8
   CellSize: 2.5
   IsFixedSize: 1
   IsFlexible: 0
