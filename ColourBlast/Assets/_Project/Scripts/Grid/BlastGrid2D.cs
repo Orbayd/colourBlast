@@ -16,6 +16,12 @@ namespace ColourBlast.Grid2D
             ColumnLenght = config.ColumnLenght;
             RowLenght = config.RowLenght;
         }
+        public BlastGrid2D(int rowLenght, int columnLenght)
+        {
+            _cells = new T[rowLenght, columnLenght];
+            ColumnLenght = columnLenght;
+            RowLenght = rowLenght;
+        }
 
         public void TraverseAll(Action<CellPosition> callback)
         {
@@ -31,12 +37,20 @@ namespace ColourBlast.Grid2D
         public void SetCell(int row, int column, T data)
         {
             _cells[row, column] = data;
-
+        }
+        public void SetCell(CellPosition position, T data)
+        {
+            SetCell(position.Row,position.Column,data);
         }
 
         public T GetCell(int row, int column)
         {
             return _cells[row, column];
+        }
+
+        public T GetCell(CellPosition position)
+        {
+            return GetCell(position.Row,position.Column);
         }
 
         public T[] GetColumnItems(int columnId)

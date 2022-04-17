@@ -8,14 +8,13 @@ using UnityEngine;
 public class BlastManager
 {
     private BlastGroupConfig _blastConfig;
-    private IBlastItemFactory _factory;
-    // private List<BlastGroup> _blastGroups = new List<BlastGroup>();
+    private IFactory<BlastItem> _factory;
     private IShuffleCommand _shuffler;
     private ICollapseCommand _collapser;
     private IFillCommand _filler;
     private IGroupCommand _grouper;
 
-    public BlastManager(BlastGroupConfig blastConfig, IBlastItemFactory factory,IGroupCommand grouper, ICollapseCommand collpaser, IFillCommand filler,IShuffleCommand shuffler)
+    public BlastManager(BlastGroupConfig blastConfig, IFactory<BlastItem> factory,IGroupCommand grouper, ICollapseCommand collpaser, IFillCommand filler,IShuffleCommand shuffler)
     {
         _blastConfig = blastConfig;
         _factory = factory;
@@ -30,11 +29,11 @@ public class BlastManager
     {
        return _grouper.BlastGroups.FirstOrDefault(x=> x.Contains(row,column));
     }
-    public void CreateBlastGrid(AnimatedBlastGrid2D<BlastItem> _grid)
+    public void CreateBlastItems(AnimatedBlastGrid2D<BlastItem> _grid)
     {
         _grid.TraverseAll((postion) =>
         {
-            var item = _factory.CreateRandom();
+            var item = _factory.Create();
             _grid.SetCell(postion.Row, postion.Column, item);
             item.transform.position = _grid.GridToWorldPosition(postion.Row,postion.Column);
             item.name = $"GridItem_[{postion.Row},{postion.Column}]";
@@ -44,7 +43,7 @@ public class BlastManager
         });
 
     }
-    public void CreateGroups(AnimatedBlastGrid2D<BlastItem> grid)
+    public void CreateBlastGroups(AnimatedBlastGrid2D<BlastItem> grid)
     {
         _grouper.CreateGroups(grid);
         SetBlastGroupSprites(grid);

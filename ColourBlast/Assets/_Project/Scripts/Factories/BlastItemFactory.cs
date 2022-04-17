@@ -3,13 +3,7 @@ using ColourBlast.Helpers;
 using UnityEngine;
 using UnityEngine.U2D;
 
-public interface IBlastItemFactory
-{
-    BlastItem CreateRandom();
-    BlastItem CreateRandom(Vector2 position);
-}
-
-public class BlastItemFactory : IBlastItemFactory
+public class BlastItemFactory : IFactory<BlastItem>
 {
     private GameObject _template;
     private Array _blastColours;
@@ -26,12 +20,12 @@ public class BlastItemFactory : IBlastItemFactory
         _colourlimit = colourlimit;
         _atlas = atlas;
     }
-    public BlastItem CreateRandom()
+    public BlastItem Create()
     {
-        return CreateRandom(Vector2.zero);
+        return Create(Vector2.zero);
     }
 
-    public BlastItem CreateRandom(Vector2 position)
+    public BlastItem Create(Vector2 position)
     {
         var blastItem = _poolingService.Spawn(position,Vector3.zero).GetComponent<BlastItem>();
         blastItem.BlastColour = (BlastColour)_blastColours.GetValue(UnityEngine.Random.Range(0, Mathf.Clamp(_colourlimit,1,_blastColours.Length)));

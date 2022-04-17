@@ -52,10 +52,10 @@ namespace ColourBlast.Grid2D
         {
             return GetGridPosition(AnchorPosition, row, column, new Vector2(CellWidth, CellHeight));
         }
-        public Vector2Int WorldToGridPosition(Vector2 worldPosition)
-        {
-            return WorldToGridPosition(AnchorPosition, worldPosition, new Vector2(CellWidth, CellHeight));
-        }
+        // public Vector2Int WorldToGridPosition(Vector2 worldPosition)
+        // {
+        //     return WorldToGridPosition(AnchorPosition, worldPosition, new Vector2(CellWidth, CellHeight));
+        // }
 
         Vector3 GetGridPosition(GridAnchorPosition anchorPosition, int row, int column, Vector2 cellSize)
         {

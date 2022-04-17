@@ -10,4 +10,8 @@ public class BlastGridConfig : ScriptableObject
     [Range(2,10)]
     public int RowLenght;
     public float CellSize;
+    public bool IsFixedSize;
+    public bool IsFlexible;
+    public GridAnchorPosition AnchorPosition;
+
 }

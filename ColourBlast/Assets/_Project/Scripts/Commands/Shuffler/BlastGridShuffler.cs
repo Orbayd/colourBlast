@@ -5,85 +5,84 @@ using ColourBlast.Grid2D;
 using ColourBlast.Helpers;
 using UnityEngine;
 
-public interface IShuffleCommand
-{
-    void Shuffle(AnimatedBlastGrid2D<BlastItem> grid);
-}
 public class BlastGridShuffler : IShuffleCommand
 {
     public List<CellPosition> _emptyPositions;
 
     public void Shuffle(AnimatedBlastGrid2D<BlastItem> grid)
     {
-        bool[,] availabilityMap = new bool[grid.RowLenght, grid.ColumnLenght];
-        var valueCountPairs = grid.GroupByValue();       
+        // bool[,] availabilityMap = new bool[grid.RowLenght, grid.ColumnLenght];
+        BlastGrid2D<bool> availabilityMap = new BlastGrid2D<bool>(grid.RowLenght, grid.ColumnLenght);
+        var valueCountPairs = grid.GroupByValue();
+        Debug.Assert(valueCountPairs.SelectMany(x => x.Value).Count() == grid.RowLenght * grid.ColumnLenght);
+
         grid.Clear();
-        _emptyPositions = grid.GetEmptyCells().ToList();
-         
         foreach (var pair in valueCountPairs)
         {
-            var freecell = RandomCell();
-
-            var blastItem = pair.Value.First();
-            grid.SetCell(freecell.Row, freecell.Column, blastItem);
-            pair.Value.Remove(blastItem);
-            availabilityMap[freecell.Row, freecell.Column] = true;
-            var dirs = GetPossibleDirection(freecell.Row, freecell.Column, availabilityMap).Take(pair.Value.Count);
-            foreach (var direction in dirs)
+            var targetCell = RandomCell(availabilityMap);
+            SetTargetPosition(grid, availabilityMap, pair.Value, targetCell);
+            var dirs = GetPossibleDirection(targetCell, availabilityMap).Take(pair.Value.Count);
+            if (dirs.Any())
             {
-                blastItem = pair.Value.First();
-                grid.SetCell(direction.Row, direction.Column, blastItem);
-                pair.Value.Remove(blastItem);
-
-                availabilityMap[direction.Row, direction.Column] = true;
-                _emptyPositions.RemoveAll(x => x.Row == direction.Row && x.Column == direction.Column);
+                foreach (var direction in dirs)
+                {      
+                    SetTargetPosition(grid, availabilityMap, pair.Value, direction);
+                }
             }
+            // if(pair.Value.Count> 0)
+            // {
+            //     Debug.Log("Something is Wrong");
+            // }
 
-            for (int i = 0; i < pair.Value.Count; i++)
+            for (int i = pair.Value.Count; i > 0 ; i--)
             {
-                var r = RandomCell();
-
-                blastItem = pair.Value.First();
-                grid.SetCell(r.Row, r.Column, blastItem);
-                pair.Value.Remove(blastItem);
-                availabilityMap[r.Row, r.Column] = true;
+                SetTargetPosition(grid, availabilityMap, pair.Value, RandomCell(availabilityMap));
             }
+            // if(pair.Value.Count> 0)
+            // {
+            //     Debug.Log("Something is Wrong");
+            // }
         }
-
-        _emptyPositions.Clear();
+        Debug.Assert(availabilityMap.GetEmptyCells(false).Length == 0, $"");
     }
 
-    private List<CellPosition> GetPossibleDirection(int row, int column, bool[,] availabilityMap)
+    private void SetTargetPosition(AnimatedBlastGrid2D<BlastItem> grid, BlastGrid2D<bool> availabilityMap, List<BlastItem> pair, CellPosition targetPosition)
+    {
+        grid.SetCell(targetPosition.Row, targetPosition.Column, pair.First());
+        pair.Remove(pair.First());
+        Debug.Assert(availabilityMap.GetCell(targetPosition) == false, $"[{targetPosition.Row},{targetPosition.Column} is not empty!]");
+        availabilityMap.SetCell(targetPosition, true); ;
+    }
+
+    private List<CellPosition> GetPossibleDirection(CellPosition position, BlastGrid2D<bool> availabilityMap)
     {
         List<CellPosition> availiblePositions = new List<CellPosition>();
 
-        var position = new CellPosition(row, column);
-        
-        if (row < availabilityMap.GetLength(0) - 1)
+        if (position.Row < availabilityMap.RowLenght - 1)
         {
-            if (!availabilityMap[row + 1, column])
+            if (!availabilityMap.GetCell(position.Right))
             {
                 availiblePositions.Add(position.Right);
             }
         }
-        if (column < availabilityMap.GetLength(1) - 1)
+        if (position.Column < availabilityMap.ColumnLenght - 1)
         {
-            if (!availabilityMap[row, column + 1])
+            if (!availabilityMap.GetCell(position.Down))
             {
                 availiblePositions.Add(position.Down);
             }
         }
-        if (row > 0)
+        if (position.Row > 0)
         {
-            if (!availabilityMap[row - 1, column])
+            if (!availabilityMap.GetCell(position.Left))
             {
                 availiblePositions.Add(position.Left);
             }
         }
 
-        if (column > 0)
+        if (position.Column > 0)
         {
-            if (!availabilityMap[row, column - 1])
+            if (!availabilityMap.GetCell(position.Up))
             {
                 availiblePositions.Add(position.Up);
             }
@@ -92,6 +91,13 @@ public class BlastGridShuffler : IShuffleCommand
         return availiblePositions;
     }
 
+    public CellPosition RandomCell(BlastGrid2D<bool> availabilityMap)
+    {
+        var emptyPositions = availabilityMap.GetEmptyCells(false);
+        var rand = UnityEngine.Random.Range(0, emptyPositions.Length);
+        var randomCell = emptyPositions.ElementAt(rand);
+        return randomCell;
+    }
 
     public CellPosition RandomCell()
     {

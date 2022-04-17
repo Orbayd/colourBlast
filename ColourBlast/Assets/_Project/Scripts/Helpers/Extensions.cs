@@ -88,5 +88,18 @@ namespace ColourBlast.Helpers
             return emptyCells.ToArray();
         }
 
+         public static CellPosition[] GetEmptyCells<T>(this BlastGrid2D<T> grid, T defaultValue)
+        {
+            List<CellPosition> emptyCells = new List<CellPosition>();
+            grid.TraverseAll((position) =>
+            {
+                if (grid.GetCell(position.Row, position.Column).Equals(defaultValue))
+                {
+                    emptyCells.Add(new CellPosition(position.Row, position.Column));
+                }
+            });
+            return emptyCells.ToArray();
+        }
+
     }
 }

@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using ColourBlast.Grid2D;
-using UnityEngine;
 
 public class BlastGridGrouper : IGroupCommand
 {
@@ -23,13 +22,9 @@ public class BlastGridGrouper : IGroupCommand
            if (blastgroup is null)
            {
                var value = _grid.GetCell(positon);
-               if (value is null)
+               if (value != null)
                {
-                   Debug.Log("Cell is Empty");
-               }
-               else
-               {
-                   //If not create new Group
+                    //If not create new Group
                    blastgroup = new BlastGroup() { Value = value.BlastColour };
                    blastgroup.Add(positon);
                    _blastGroups.Add(blastgroup);
