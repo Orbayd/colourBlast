@@ -1,7 +1,10 @@
 using UnityEngine;
 
-public interface IFactory<T>
+namespace ColourBlast
 {
-    T Create();
-    T Create(Vector2 position);
+    public interface IFactory<T>
+    {
+        T Create();
+        T Create(Vector2 position);
+    }
 }

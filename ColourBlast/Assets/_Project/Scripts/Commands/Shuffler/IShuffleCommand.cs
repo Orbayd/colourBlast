@@ -1,6 +1,9 @@
 using ColourBlast.Grid2D;
 
-public interface IShuffleCommand
+namespace ColourBlast.Commands.Shuffle
 {
-    void Shuffle(AnimatedBlastGrid2D<BlastItem> grid);
+    public interface IShuffleCommand
+    {
+        void Shuffle(AnimatedBlastGrid2D<BlastItem> grid);
+    }
 }

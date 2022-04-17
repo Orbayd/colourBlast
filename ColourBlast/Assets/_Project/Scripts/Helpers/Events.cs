@@ -1,5 +1,5 @@
 
-using UnityEngine;
+using ColourBlast.Grid2D;
 
 namespace ColourBlast.Helpers
 {

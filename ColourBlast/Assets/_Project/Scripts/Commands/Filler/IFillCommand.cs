@@ -1,6 +1,9 @@
 using ColourBlast.Grid2D;
 
-public interface IFillCommand
+namespace ColourBlast.Commands.Fill
 {
-    void Fill(AnimatedBlastGrid2D<BlastItem> grid);
+    public interface IFillCommand
+    {
+        void Fill(AnimatedBlastGrid2D<BlastItem> grid);
+    }
 }

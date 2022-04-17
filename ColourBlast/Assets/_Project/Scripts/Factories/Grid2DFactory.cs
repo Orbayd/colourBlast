@@ -1,7 +1,8 @@
 
+using ColourBlast.Grid2D;
 using UnityEngine;
 
-namespace ColourBlast.Grid2D
+namespace ColourBlast
 {
     public class Grid2DFactory : IFactory<AnimatedBlastGrid2D<BlastItem>>
     {

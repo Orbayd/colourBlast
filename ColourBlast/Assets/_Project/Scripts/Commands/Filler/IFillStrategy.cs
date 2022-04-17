@@ -1,6 +1,9 @@
 using ColourBlast.Grid2D;
 
-public interface IFillStrategy
+namespace ColourBlast.Commands.Fill
 {
-    BlastItem Execute(AnimatedBlastGrid2D<BlastItem> grid, CellPosition position);
+    public interface IFillStrategy
+    {
+        BlastItem Execute(AnimatedBlastGrid2D<BlastItem> grid, CellPosition position);
+    }
 }

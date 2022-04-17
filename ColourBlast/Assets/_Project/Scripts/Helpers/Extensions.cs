@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using ColourBlast.Enums;
 using ColourBlast.Grid2D;
 using UnityEngine;
 

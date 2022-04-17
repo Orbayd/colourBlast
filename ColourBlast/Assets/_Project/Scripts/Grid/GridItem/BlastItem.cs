@@ -1,21 +1,25 @@
 using UnityEngine;
 using ColourBlast.Helpers;
+using ColourBlast.Enums;
 
-public class BlastItem : GridItem
+namespace ColourBlast
 {
-    [SerializeField]
-    private SpriteRenderer _renderer;
-
-    public BlastColour BlastColour;
-
-    public void SetImage(Sprite sprite)
+    public class BlastItem : GridItem
     {
-        _renderer.sprite = sprite;
-    }
+        [SerializeField]
+        private SpriteRenderer _renderer;
 
-    void OnMouseDown()
-    {
-        MessageBus.Publish(new OnClickEventHandler(Position));
+        public BlastColour BlastColour;
+
+        public void SetImage(Sprite sprite)
+        {
+            _renderer.sprite = sprite;
+        }
+
+        void OnMouseDown()
+        {
+            MessageBus.Publish(new OnClickEventHandler(Position));
+        }
     }
 }
 

@@ -1,7 +1,10 @@
+using ColourBlast.Grid2D;
 using UnityEngine;
 
-public abstract class GridItem : MonoBehaviour, IGridItem
+namespace ColourBlast
 {
-    public CellPosition Position { get ; set; }
+    public abstract class GridItem : MonoBehaviour, IGridItem
+    {
+        public CellPosition Position { get; set; }
+    }
 }
-

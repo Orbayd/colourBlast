@@ -1,53 +1,56 @@
 
 using System.Collections.Generic;
 using System.Linq;
+using ColourBlast.Commands.Collapse;
 using ColourBlast.Grid2D;
 using ColourBlast.Helpers;
 
-
-public class BlastGridCollapser : ICollapseCommand
+namespace ColourBlast
 {
-    public PoolingService _poolService;
-    public BlastGridCollapser(PoolingService poolService)
+    public class BlastGridCollapser : ICollapseCommand
     {
-        _poolService = poolService;
-    }
-
-    public void Collapse(AnimatedBlastGrid2D<BlastItem> grid, IEnumerable<CellPosition> source)
-    {
-        var colums = grid.GroupByColumns(source);
-        foreach (var column in colums)
+        public PoolingService _poolService;
+        public BlastGridCollapser(PoolingService poolService)
         {
-            var rowIds = column.Value.OrderByDescending(x => x);
+            _poolService = poolService;
+        }
 
-            var maxRange = rowIds.First();
-            var minRange = rowIds.Last();
-            for (int i = maxRange; i >= minRange; i--)
+        public void Collapse(AnimatedBlastGrid2D<BlastItem> grid, IEnumerable<CellPosition> source)
+        {
+            var colums = grid.GroupByColumns(source);
+            foreach (var column in colums)
             {
-                if (grid.GetCell(i, column.Key) != null)
-                {
-                    _poolService.Release(grid.GetCell(i, column.Key).gameObject);
-                    grid.SetEmpty(i, column.Key);
-                }
-            }
+                var rowIds = column.Value.OrderByDescending(x => x);
 
-            if (minRange > 0)
-            {
-                for (int i = minRange - 1; i >= 0; i--)
+                var maxRange = rowIds.First();
+                var minRange = rowIds.Last();
+                for (int i = maxRange; i >= minRange; i--)
                 {
-                    if (grid.GetCell(i + (maxRange - minRange + 1), column.Key) != null)
+                    if (grid.GetCell(i, column.Key) != null)
                     {
-                        _poolService.Release(grid.GetCell(i + (maxRange - minRange + 1), column.Key).gameObject);
-                    }
-                    var value = grid.GetCell(i, column.Key);
-                    if (value != null)
-                    {
-                        grid.SetCell(i + (maxRange - minRange + 1), column.Key, value);
+                        _poolService.Release(grid.GetCell(i, column.Key).gameObject);
                         grid.SetEmpty(i, column.Key);
+                    }
+                }
+
+                if (minRange > 0)
+                {
+                    for (int i = minRange - 1; i >= 0; i--)
+                    {
+                        if (grid.GetCell(i + (maxRange - minRange + 1), column.Key) != null)
+                        {
+                            _poolService.Release(grid.GetCell(i + (maxRange - minRange + 1), column.Key).gameObject);
+                        }
+                        var value = grid.GetCell(i, column.Key);
+                        if (value != null)
+                        {
+                            grid.SetCell(i + (maxRange - minRange + 1), column.Key, value);
+                            grid.SetEmpty(i, column.Key);
+                        }
                     }
                 }
             }
         }
-    }
 
+    }
 }

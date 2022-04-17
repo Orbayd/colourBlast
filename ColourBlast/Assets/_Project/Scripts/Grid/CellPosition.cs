@@ -1,4 +1,6 @@
 
+namespace ColourBlast.Grid2D
+{
     public struct CellPosition
     {
         public int Row {get; private set;}
@@ -21,4 +23,4 @@
 
 
     }
-
+}
